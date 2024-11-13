@@ -1,23 +1,71 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument, UserWithId } from './schemas/user.schema';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(username: string, password: string): Promise<User> {
+  async create({
+    username,
+    password,
+    city,
+    state,
+    cep,
+  }: {
+    username: string;
+    password: string;
+    city: string;
+    state: string;
+    cep: string;
+  }): Promise<User> {
     const hashedPassword = await bcrypt.hash(password, 10);
     const createdUser = new this.userModel({
       username,
       password: hashedPassword,
+      city,
+      state,
+      cep,
     });
     return createdUser.save();
   }
 
-  async findByUsername(username: string): Promise<User | undefined> {
-    return this.userModel.findOne({ username }).exec();
+  async edit({
+    id,
+    username,
+    city,
+    state,
+    cep,
+  }: {
+    id: string;
+    username?: string;
+    city?: string;
+    state?: string;
+    cep?: string;
+  }): Promise<User | null> {
+    return this.userModel
+      .findByIdAndUpdate(id, { username, city, state, cep }, { new: true })
+      .select('-password')
+      .exec();
+  }
+
+  async findByUsername(username: string): Promise<UserWithId | undefined> {
+    const user = await this.userModel
+      .findOne({ username })
+      .select('-password')
+      .lean()
+      .exec();
+    const id = user._id as string;
+    return { ...user, id };
+  }
+
+  async findFullUserByUsername(
+    username: string,
+  ): Promise<UserWithId | undefined> {
+    const user = await this.userModel.findOne({ username }).lean().exec();
+    const id = user._id as string;
+    return { ...user, id };
   }
 }
