@@ -9,12 +9,14 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   async create({
+    phone,
     username,
     password,
     city,
     state,
     cep,
   }: {
+    phone: string;
     username: string;
     password: string;
     city: string;
@@ -28,6 +30,7 @@ export class UsersService {
       city,
       state,
       cep,
+      phone,
     });
     return createdUser.save();
   }
@@ -38,15 +41,21 @@ export class UsersService {
     city,
     state,
     cep,
+    phone,
   }: {
     id: string;
     username?: string;
     city?: string;
     state?: string;
     cep?: string;
+    phone?: string;
   }): Promise<User | null> {
     return this.userModel
-      .findByIdAndUpdate(id, { username, city, state, cep }, { new: true })
+      .findByIdAndUpdate(
+        id,
+        { username, city, state, cep, phone },
+        { new: true },
+      )
       .select('-password')
       .exec();
   }

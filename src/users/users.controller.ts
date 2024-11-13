@@ -32,11 +32,13 @@ export class UsersController {
       city,
       state,
       cep,
+      phone,
     }: {
       username: string;
       city: string;
       state: string;
       cep: string;
+      phone: string;
     },
   ) {
     const user = await this.usersService.findByUsername(username);
@@ -51,6 +53,7 @@ export class UsersController {
       state,
       cep,
       username: bodyUsername,
+      phone,
     });
   }
 }

@@ -39,6 +39,7 @@ export class AuthController {
       city: string;
       state: string;
       cep: string;
+      phone: string;
     },
   ) {
     const hasUserWithUsername = await this.usersService.findByUsername(
@@ -49,6 +50,7 @@ export class AuthController {
     }
 
     const user = await this.usersService.create({
+      phone: authCredentialsDto.phone,
       username: authCredentialsDto.username,
       password: authCredentialsDto.password,
       city: authCredentialsDto.city,
