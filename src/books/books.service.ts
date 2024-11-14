@@ -45,4 +45,28 @@ export class BooksService {
     });
     return createBook.save();
   }
+
+  async editBook({
+    name,
+    media,
+    description,
+    username,
+    id,
+  }: {
+    name: string;
+    media: string;
+    description: string;
+    username: string;
+    id: string;
+  }) {
+    const user = await this.userService.findByUsername(username);
+
+    return this.bookModel
+      .findByIdAndUpdate(
+        id,
+        { name, media, description, userId: user.id },
+        { new: true },
+      )
+      .exec();
+  }
 }

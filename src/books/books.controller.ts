@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Request } from '@nestjs/common';
 import { BooksService } from './books.service';
 
 @Controller('api/books')
@@ -34,6 +34,31 @@ export class BooksController {
       media,
       description,
       username,
+    });
+  }
+
+  @Put()
+  async editBook(
+    @Request() { user: { username } },
+    @Body()
+    {
+      name,
+      media,
+      description,
+      id,
+    }: {
+      name: string;
+      media: string;
+      description: string;
+      id: string;
+    },
+  ) {
+    return await this.bookSerice.editBook({
+      name,
+      media,
+      description,
+      username,
+      id,
     });
   }
 }
