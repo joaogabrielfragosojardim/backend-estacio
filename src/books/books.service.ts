@@ -18,8 +18,18 @@ export class BooksService {
 
   async getBooks(username: string) {
     const user = await this.userService.findByUsername(username);
+
     const books = await this.bookModel.find({ userId: { $ne: user.id } });
-    return books;
+
+    const booksWithUser = await Promise.all(
+      books.map(async (book) => {
+        const bookUser = await this.userService.findbyId(book.userId);
+
+        return { ...book.toObject(), ...bookUser };
+      }),
+    );
+
+    return booksWithUser;
   }
 
   async getUserBooks(username: string) {

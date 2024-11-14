@@ -66,7 +66,18 @@ export class UsersService {
       .select('-password')
       .lean()
       .exec();
+    if (!user) return undefined;
     const id = user._id as string;
+    return { ...user, id };
+  }
+
+  async findbyId(id: string): Promise<UserWithId | undefined> {
+    const user = await this.userModel
+      .findById(id)
+      .select('-password')
+      .lean()
+      .exec();
+    if (!user) return undefined;
     return { ...user, id };
   }
 
