@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Put, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Request,
+} from '@nestjs/common';
 import { BooksService } from './books.service';
 
 @Controller('api/books')
@@ -57,6 +66,14 @@ export class BooksController {
       name,
       media,
       description,
+      username,
+      id,
+    });
+  }
+
+  @Delete('/:id')
+  async deleteBook(@Request() { user: { username } }, @Param('id') id: string) {
+    return await this.bookSerice.deleteBook({
       username,
       id,
     });

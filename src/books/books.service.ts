@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Book, BookDocument } from 'src/books/schemas/book.schema';
@@ -68,5 +72,23 @@ export class BooksService {
         { new: true },
       )
       .exec();
+  }
+
+  async deleteBook({ id, username }: { id: string; username: string }) {
+    const user = await this.userService.findByUsername(username);
+
+    const book = await this.bookModel.findById(id).exec();
+
+    if (!book) {
+      throw new ConflictException('Livro não encontrado');
+    }
+
+    if (book.userId.toString() !== user.id.toString()) {
+      throw new UnauthorizedException(
+        'Você não tem permissão para deletar este livro',
+      );
+    }
+
+    return this.bookModel.findByIdAndDelete(id).exec();
   }
 }
